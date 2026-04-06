@@ -1,6 +1,7 @@
 package com.coffee.entity;
 
 import com.coffee.constant.Role;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -40,5 +41,7 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate regdate;
 }
