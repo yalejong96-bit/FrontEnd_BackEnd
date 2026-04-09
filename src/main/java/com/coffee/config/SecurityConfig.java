@@ -35,7 +35,7 @@ public class SecurityConfig {
                 "/js/**",
                 "/member/signup",
                 "/member/login",
-                "/product/list"
+                "/product/**"
         };
 
         http
