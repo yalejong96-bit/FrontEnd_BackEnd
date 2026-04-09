@@ -15,15 +15,15 @@ import java.util.List;
 public class ProductController {
     @Autowired
     private ProductService productService;
-    private ProductRepository productRepository ;
 
     @GetMapping("/list")
-    public List<Product> list(){
+    public List<Product> list() {
         List<Product> products = this.productService.getProductList();
 
         for (Product product : products) {
             product.getName().contains(".jpg");
-            /*this.productRepository.save(product);*/
+            if (product.getName().contains(".jpg")) {
+            }
         }
         return products;
     }
