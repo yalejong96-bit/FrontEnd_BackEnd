@@ -1,15 +1,20 @@
 package com.coffee.controller;
 
 import com.coffee.entity.Product;
-import com.coffee.repository.ProductRepository;
 import com.coffee.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/product")
@@ -20,7 +25,7 @@ public class ProductController {
     @GetMapping("/list")
     public List<Product> list() {
         List<Product> products = this.productService.getProductList();
-    /*    List<Product> productList = new ArrayList<>();
+        /*List<Product> productList = new ArrayList<>();
 
         for (Product product : products) {
 
@@ -31,6 +36,44 @@ public class ProductController {
 
         }
         return productList;*/
+
+        /*List<Product> productList = new ArrayList<>();
+
+        for (Product product : products) {
+
+            if ((product.getCategory().getDescription().contains("빵")) {
+                productList.add(product);
+
+            }
+
+        }
+        return productList;*/
+
+        /*List<Product> productList = new ArrayList<>();
+
+        for (Product product : products) {
+            if &&(product.getPrice()>10000)) {
+                productList.add(product);
+
+            }
+
+        }
+        return productList;*/
+
+        /*List<Product> productList = new ArrayList<>();
+
+        for (Product product : products) {
+
+            if ((product.getCategory().getDescription().contains("빵"))&&(product.getPrice()>10000)) {
+                productList.add(product);
+
+            }
+
+        }
+        return productList;*/
+
+        /*return products.stream().filter(p-> p.getPrice() > 10000).toList();*/
+
         return products;
     }
 
@@ -46,11 +89,71 @@ public class ProductController {
             }
 
         } catch (DataIntegrityViolationException err) {
-            String message = "해당 상품은 장바구니에 포함이 되어 있거나, 이미 매출이 발생한 상품 입니다. \n확인해 주세요." ;
+            String message = "해당 상품은 장바구니에 포함이 되어 있거나, 이미 매출이 발생한 상품 입니다. \n확인해 주세요.";
             return ResponseEntity.badRequest().body(message);
 
         } catch (Exception err) {
             return ResponseEntity.internalServerError().body("오류 발생 : " + err.getMessage());//예외 객체가 처리
+        }
+    }
+
+    @PostMapping("/insert")
+    public ResponseEntity<?> insert(@Valid @RequestBody Product product, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError xx : bindingResult.getFieldErrors()) {
+                errors.put(xx.getField(), xx.getDefaultMessage());
+            }
+
+            return new ResponseEntity<>(
+                    Map.of(
+                            "message", "상품 등록 유효성 검사에 문제가 있습니다.",
+                            "errors", errors
+                    ),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+
+        try {
+            Product savedProduct = this.productService.insertProduct(product);
+
+            if(savedProduct == null){
+                return ResponseEntity
+                        .status(500)
+                        .body(
+                                Map.of(
+                                        "message", "상품 등록에 실패하였습니다.",
+                                        "error", "bad image file format"
+                                )
+                        );
+            }
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "message", "상품이 성공적으로 등록되었습니다.",
+                            "image", savedProduct.getImage()
+                    )
+            );
+
+        } catch (IllegalStateException err) { // 경로 또는 이미지 저장 문제
+            return ResponseEntity
+                    .status(500)
+                    .body(
+                            Map.of(
+                                    "message", err.getMessage(),
+                                    "error", "File Save Error"
+                            )
+                    );
+
+        } catch (Exception err) { // 데이터 베이스 오류
+            return ResponseEntity
+                    .status(500)
+                    .body(
+                            Map.of(
+                                    "message", err.getMessage(),
+                                    "error", "Internal Server Error"
+                            )
+                    );
         }
     }
 }
