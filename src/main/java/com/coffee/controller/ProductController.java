@@ -60,9 +60,9 @@ public class ProductController {
         }
         return productList;*/
 
-        List<Product> productList = new ArrayList<>();
+        /*List<Product> productList = new ArrayList<>();
 
-        /*for (Product product : products) {
+        for (Product product : products) {
 
             if(product.getCategory() != null && product.getCategory().getDescription() != null){
                 if (product.getCategory().getDescription().contains("빵") && product.getPrice()>10000) {
@@ -70,9 +70,6 @@ public class ProductController {
 
                 }
             }
-
-
-
         }
         return productList;*/
 
