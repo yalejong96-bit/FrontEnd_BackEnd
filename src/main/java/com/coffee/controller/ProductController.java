@@ -60,21 +60,21 @@ public class ProductController {
         }
         return productList;*/
 
-        /*List<Product> productList = new ArrayList<>();
+        List<Product> productList = new ArrayList<>();
 
         for (Product product : products) {
 
-            if ((product.getCategory().getDescription().contains("빵"))&&(product.getPrice()>10000)) {
+            if (product.getCategory().getDescription().contains("빵") && product.getPrice()>10000) {
                 productList.add(product);
 
             }
 
         }
-        return productList;*/
+        return productList;
 
         /*return products.stream().filter(p-> p.getPrice() > 10000).toList();*/
 
-        return products;
+        /*return products;*/
     }
 
     @DeleteMapping("/delete/{id}") // {id}를 경로 변수라고 부르면, 가변 매개 변수
