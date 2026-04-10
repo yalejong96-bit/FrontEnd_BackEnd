@@ -41,7 +41,7 @@ public class ProductController {
 
         for (Product product : products) {
 
-            if ((product.getCategory().getDescription().contains("빵")) {
+            if (product.getCategory().getDescription().contains("빵")) {
                 productList.add(product);
 
             }
@@ -52,7 +52,7 @@ public class ProductController {
         /*List<Product> productList = new ArrayList<>();
 
         for (Product product : products) {
-            if &&(product.getPrice()>10000)) {
+            if (product.getPrice() > 10000) {
                 productList.add(product);
 
             }
@@ -64,8 +64,8 @@ public class ProductController {
 
         for (Product product : products) {
 
-            if(product.getCategory() != null && product.getCategory().getDescription() != null){
-                if (product.getCategory().getDescription().contains("빵") && product.getPrice()>10000) {
+            if (product.getCategory() != null && product.getCategory().getDescription() != null) {
+                if (product.getCategory().getDescription().contains("빵") && product.getPrice() > 10000) {
                     productList.add(product);
 
                 }
@@ -73,7 +73,7 @@ public class ProductController {
         }
         return productList;*/
 
-        /*return products.stream().filter(p-> p.getPrice() > 10000).toList();*/
+        /*return products.stream().filter(p -> p.getPrice() > 10000).toList();*/
 
         return products;
     }
@@ -118,7 +118,7 @@ public class ProductController {
         try {
             Product savedProduct = this.productService.insertProduct(product);
 
-            if(savedProduct == null){
+            if (savedProduct == null) {
                 return ResponseEntity
                         .status(500)
                         .body(
