@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.FieldError;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -93,10 +95,56 @@ public class ProductService {
             System.out.println(product);
 
             return this.productRepository.save(product); // 데이터 베이스에 추가하기
-        }else {
+        } else {
             return null;
 
         }
 
     }
+
+    public Product getProductById(Long id) {
+        Optional<Product> product = this.productRepository.findById(id);
+
+        return product.orElse(null);
+    }
+
+    public Optional<Product> findById(Long id) {
+        return this.productRepository.findById(id);
+    }
+
+    private void deleteOldImage(String oldImageFileName) {
+        if (oldImageFileName == null || oldImageFileName.isBlank()) {
+            return;
+        }
+
+        File oldImageFile = new File(productImageLocation + oldImageFileName);
+
+        if (oldImageFile.exists()) {
+            boolean deleted = oldImageFile.delete();
+            if (!deleted) {
+                System.out.println("기존 이미지 삭제 실패 : " + oldImageFileName);
+            }
+        }
+    }
+
+    public Product updateProduct(Product savedProduct, Product updatedProduct) {
+        savedProduct.setName(updatedProduct.getName());
+        savedProduct.setPrice(updatedProduct.getPrice());
+        savedProduct.setCategory(updatedProduct.getCategory());
+        savedProduct.setStock(updatedProduct.getStock());
+        savedProduct.setDescription(updatedProduct.getDescription());
+
+        if (updatedProduct.getImage() != null && updatedProduct.getImage().startsWith("data:image")) {
+            deleteOldImage(savedProduct.getImage());
+            String imageFileName = saveProductImage(updatedProduct.getImage());
+            savedProduct.setImage(imageFileName);
+        }
+
+        return productRepository.save(savedProduct);
+    }
+
+    public Optional<Product> findProductById(Long productId){
+        return productRepository.findById(productId);
+    }
+
 }

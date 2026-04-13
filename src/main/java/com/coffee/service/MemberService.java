@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +32,9 @@ public class MemberService {
         bean.setPassword(encodedPassword);
 
         memberRepository.save(bean);
+    }
+
+    public Optional<Member> findMemberByEmail(Long memberId){
+        return this.memberRepository.findById(memberId);
     }
 }

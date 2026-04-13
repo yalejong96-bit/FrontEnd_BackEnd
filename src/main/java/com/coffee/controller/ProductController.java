@@ -11,10 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/product")
@@ -115,6 +112,16 @@ public class ProductController {
             );
         }
 
+        if(!product.getImage().startsWith("data:image")){
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(
+                            Map.of(
+                                    "errors", Map.of("image", "이미지 파일이 아닙니다.")
+                            )
+                    );
+        }
+
         try {
             Product savedProduct = this.productService.insertProduct(product);
 
@@ -155,6 +162,87 @@ public class ProductController {
                                     "error", "Internal Server Error"
                             )
                     );
+        }
+    }
+
+    @GetMapping("/update/{id}")
+    public ResponseEntity<Product> getUpdate(@PathVariable Long id) {
+        System.out.println("수정할 상품 번호 : " + id);
+
+        Product product = this.productService.getProductById(id);
+
+        if (product == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } else {
+            return ResponseEntity.ok(product);
+        }
+    }
+
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> putUpdate(@PathVariable Long id,
+                                       @Valid @RequestBody Product updatedProduct,
+                                       BindingResult bindingResult) {
+
+        // 유효성 검사
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            for (FieldError xx : bindingResult.getFieldErrors()) {
+                errors.put(xx.getField(), xx.getDefaultMessage());
+            }
+            return new ResponseEntity<>(
+                    Map.of("message", "상품 수정 유효성 검사에 문제가 있습니다.", "errors", errors
+                    ),
+                    HttpStatus.BAD_REQUEST
+
+            );
+        }
+
+        if (!updatedProduct.getImage().startsWith("data:image")) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(
+                            Map.of(
+                                    "errors", Map.of("image", "이미지 파일이 아닙니다.")
+                            )
+                    );
+        }
+
+        // 상품 정보 수정
+        Optional<Product> findProduct = productService.findById(id);
+
+
+
+        if (findProduct.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            Product saveProduct = findProduct.get();
+            this.productService.updateProduct(saveProduct, updatedProduct);
+
+            return ResponseEntity.ok(Map.of("message", "상품 수정 성공"));
+
+        } catch (Exception err) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(
+                            Map.of(
+                                    "messgae", err.getMessage(),
+                                    "error", "상품 수정 실패"
+                            )
+                    );
+        }
+    }
+
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<Product> detail(@PathVariable Long id) {
+        Product product = productService.getProductById(id);
+
+        if (product == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } else {
+            return ResponseEntity.ok(product);
         }
     }
 }
