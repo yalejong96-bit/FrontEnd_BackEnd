@@ -112,7 +112,7 @@ public class ProductController {
             );
         }
 
-        if(!product.getImage().startsWith("data:image")){
+        /*if(!product.getImage().startsWith("data:image")){
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(
@@ -120,7 +120,7 @@ public class ProductController {
                                     "errors", Map.of("image", "이미지 파일이 아닙니다.")
                             )
                     );
-        }
+        }*/
 
         try {
             Product savedProduct = this.productService.insertProduct(product);
@@ -198,7 +198,7 @@ public class ProductController {
             );
         }
 
-        if (!updatedProduct.getImage().startsWith("data:image")) {
+        /*if (!updatedProduct.getImage().startsWith("data:image")) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(
@@ -206,7 +206,7 @@ public class ProductController {
                                     "errors", Map.of("image", "이미지 파일이 아닙니다.")
                             )
                     );
-        }
+        }*/
 
         // 상품 정보 수정
         Optional<Product> findProduct = productService.findById(id);
