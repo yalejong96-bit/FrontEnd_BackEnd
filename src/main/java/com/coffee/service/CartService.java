@@ -44,7 +44,7 @@ public class CartService {
     }
 
     @Transactional
-    public String addProductToCart(CartProductDto dto, String email) {
+    public String addProductToCart(CartProductDto dto, String email) throws Exception {
         // 회원 조회
         Member member = memberRepository.findByEmail(email);
 
