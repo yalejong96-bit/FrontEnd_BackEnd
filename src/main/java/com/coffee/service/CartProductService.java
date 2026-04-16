@@ -20,32 +20,30 @@ public class CartProductService {
 
     private final ProductRepository productRepository;
 
-    public String editCartProductQuantity(Long cartProductId, Integer quantity, Long productId) {
+    public String editCartProductQuantity(Long cartProductId, Integer quantity) {
         // 수량 검증
         if(quantity == null || quantity < 1){
             return "오류 : 장바구니 품목은 최소 1개 이상이어야 합니다.";
         }
 
-        // 재고 수량 점검
-        Optional<Product> productOptional = productRepository.findById(productId);
-        if(productOptional.isEmpty()){
-            return "오류 : 상품 정보를 찾을 수 없습니다.";
-        }
-
-        int stock = productOptional.get().getStock();
-        if(quantity > stock){
-            return "오류 : 재고 수량이 부족합니다.";
-        }
-
-        // 카트 상품 찾기
+        // 해당 카트 상품 찾기
         Optional<CartProduct> cartProductOptional = cartProductRepository.findById(cartProductId);
 
         if(cartProductOptional.isEmpty()){
             return  "오류 : 카트 품목을 찾을 수 없습니다.";
         }
-        // 수량 변경
+
+        // 재고 수량 점검 및 수량 변경
+
+
         CartProduct cartProduct = cartProductOptional.get();
+
+        int stock = cartProduct.getProduct().getStock();
+        if(quantity > stock){
+            return "오류 : 재고 수량이 부족합니다.";
+        }
         cartProduct.setQuantity(quantity);
+
 
         // 누적 변경시 다음과 같이 코딩합니다
         //cartProduct.setQuantity(cartProduct.getQuantity()+quantity);

@@ -16,14 +16,14 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    public Member findByEmail(String email){
+    public Member findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
 
     @Autowired
-    private PasswordEncoder passwordEncoder ;
+    private PasswordEncoder passwordEncoder;
 
-    public void insert (Member bean){
+    public void insert(Member bean) {
         // 회원 가입환 사용자의 역할과 등록 일자는 여기서 설정
         bean.setRole(Role.USER);
         bean.setRegdate(LocalDate.now());
@@ -34,7 +34,11 @@ public class MemberService {
         memberRepository.save(bean);
     }
 
-    public Optional<Member> findMemberByEmail(Long memberId){
+    public Optional<Member> findMemberByEmail(Long memberId) {
+        return this.memberRepository.findById(memberId);
+    }
+
+    public Optional<Member> findMemberById(Long memberId) {
         return this.memberRepository.findById(memberId);
     }
 }
