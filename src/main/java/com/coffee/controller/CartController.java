@@ -27,7 +27,7 @@ public class CartController {
             String message = cartService.addProductToCart(dto, email);
 
             return ResponseEntity.ok(message);
-        }catch (Exception err){
+        } catch (Exception err) {
             return ResponseEntity.badRequest().body(err.getMessage());
         }
     }
@@ -50,26 +50,26 @@ public class CartController {
     @PatchMapping("/edit/{cartProductId}")
     public ResponseEntity<String> editCartProductQuantity(
             @PathVariable Long cartProductId,
-            @RequestParam(required = false) Integer quantity){
+            @RequestParam(required = false) Integer quantity) {
         System.out.println("카트 상품 아이디 : " + cartProductId);
         System.out.println("변경할 갯수 : " + quantity);
-
-        String message = cartProductService.editCartProductQuantity(cartProductId, quantity);
-
-        if (message.startsWith("오류:")) {
-            return ResponseEntity.badRequest().body(message);
+        try{
+            String message = cartProductService.editCartProductQuantity(cartProductId, quantity);
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            System.out.println(this.getClass());
+            System.out.println(e.getMessage());
+            return  ResponseEntity.badRequest().body(e.getMessage());
         }
-
-        return ResponseEntity.ok(message);
     }
 
     @DeleteMapping("/delete/{cartProductId}")
-    public ResponseEntity<String> deleteCartProduct(@PathVariable Long cartProductId){
-        System.out.println("삭제할 카드 상품 아이디 : " +  cartProductId);
+    public ResponseEntity<String> deleteCartProduct(@PathVariable Long cartProductId) {
+        System.out.println("삭제할 카드 상품 아이디 : " + cartProductId);
 
         cartProductService.deleteCartProductById((cartProductId));
 
         String message = "카트 상품 " + cartProductId + "번이 장바구니 목록에서 삭제되었습니다.";
-        return ResponseEntity.ok(message) ;
+        return ResponseEntity.ok(message);
     }
 }
