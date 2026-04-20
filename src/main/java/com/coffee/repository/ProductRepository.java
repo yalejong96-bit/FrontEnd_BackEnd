@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findProductByOrderByIdDesc();
+
+    List<Product> findByImageContaining(String keyword);
 }

@@ -25,7 +25,7 @@ import java.util.Optional;
 @Service
 public class ProductService {
     @Autowired
-    private ProductRepository productRepository ;
+    private ProductRepository productRepository;
 
     /*상품 목록 가져 오기*/
     public List<Product> getProductList() {
@@ -33,7 +33,7 @@ public class ProductService {
     }
 
     @Value("${productImageLocation}")
-    private String productImageLocation ;
+    private String productImageLocation;
 
     /*상품 삭제 기능*/
     @Transactional
@@ -91,7 +91,7 @@ public class ProductService {
 
         // String 클래스 공부 : endsWith(), split() 메소드
 
-        File imageFile = new File(productImageLocation  + imageFileName);
+        File imageFile = new File(productImageLocation + imageFileName);
         System.out.println("이미지 이름");
         System.out.println(imageFile.getName());
 
@@ -110,9 +110,9 @@ public class ProductService {
     }
 
     @Transactional
-    public Product insertProduct(Product product){
+    public Product insertProduct(Product product) {
         // product는 리액트에서 넘어온 상품 등록을 위한 정보입니다.
-        if(product.getImage() == null || !product.getImage().startsWith("data:image")){
+        if (product.getImage() == null || !product.getImage().startsWith("data:image")) {
             throw new RuntimeException("이미지 정보가 올바르지 않습니다.");
         }
 
@@ -211,5 +211,12 @@ public class ProductService {
 
     public void save(Product product) {
         productRepository.save(product);
+    }
+
+    public List<Product> getProductsByFilter(String filter) {
+        if (filter != null && !filter.isEmpty()) {
+            return productRepository.findByImageContaining(filter);
+        }
+        return productRepository.findAll();
     }
 }

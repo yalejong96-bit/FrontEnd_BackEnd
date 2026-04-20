@@ -10,9 +10,9 @@ import com.coffee.entity.Order;
 import com.coffee.entity.OrderProduct;
 import com.coffee.entity.Product;
 import com.coffee.repository.OrderRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -84,9 +84,9 @@ public class OrderService {
     public List<OrderDetailDto> getOrderListByRole(Long memberId, Role role) {
         List<Order> orders;
 
-        if(role == Role.ADMIN){
+        if (role == Role.ADMIN) {
             orders = orderRepository.findByOrderStatusOrderByIdDesc(OrderStatus.PENDING);
-        }else {
+        } else {
             orders = orderRepository.findByMemberIdAndOrderStatusOrderByIdDesc(memberId, OrderStatus.PENDING);
         }
         return convertToOrderDetailDtoList(orders);
@@ -119,4 +119,41 @@ public class OrderService {
 
     }
 
+    @Transactional
+    public String updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        final String message = "해당 주문이 존재하지 않습니다. 주문 Id : " + orderId;
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException(message));
+
+        if (order.getOrderStatus() == OrderStatus.CANCELLED) {
+            throw new IllegalStateException("취소된 주문은 상태를 변경할 수 없습니다.");
+        }
+
+        order.setOrderStatus(newStatus);
+
+        return "송장 번호 " + orderId + "의 주문 상태가 " + newStatus + "(으)로 변경되었습니다.";
+    }
+
+    @Transactional
+    public String cancelOrder(Long orderId) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+
+        if (orderOptional.isEmpty()) {
+            throw new IllegalArgumentException("해당 주문이 존재하지 않습니다. Id : " + orderId);
+        }
+
+        Order order = orderOptional.get();
+
+        for (OrderProduct op : order.getOrderProducts()) {
+            Product product = op.getProduct();
+            int quantity = op.getQuantity();
+
+            product.setStock(product.getStock() + quantity);
+            productService.save(product);
+        }
+
+        orderRepository.deleteById(orderId);
+
+        return "주문이 취소 되었습니다.";
+    }
 }

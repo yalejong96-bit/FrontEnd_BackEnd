@@ -245,4 +245,9 @@ public class ProductController {
             return ResponseEntity.ok(product);
         }
     }
+
+    @GetMapping()
+    public List<Product> getBigsizeProducts(@RequestParam(required = false) String filter){
+        return productService.getProductsByFilter(filter);
+    }
 }
