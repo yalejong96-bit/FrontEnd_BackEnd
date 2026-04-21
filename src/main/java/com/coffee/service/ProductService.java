@@ -32,6 +32,10 @@ public class ProductService {
         return this.productRepository.findProductByOrderByIdDesc();
     }
 
+    public Page<Product> listProducts(Pageable pageable) {
+        return this.productRepository.findAll(pageable);
+    }
+
     @Value("${productImageLocation}")
     private String productImageLocation;
 

@@ -5,6 +5,10 @@ import com.coffee.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -19,9 +23,9 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    @GetMapping("/list")
-    public List<Product> list() {
-        List<Product> products = this.productService.getProductList();
+//    @GetMapping("/list")
+//    public List<Product> list() {
+//        List<Product> products = this.productService.getProductList();
         /*List<Product> productList = new ArrayList<>();
 
         for (Product product : products) {
@@ -72,8 +76,8 @@ public class ProductController {
 
         /*return products.stream().filter(p -> p.getPrice() > 10000).toList();*/
 
-        return products;
-    }
+//        return products;
+//    }
 
     @DeleteMapping("/delete/{id}") // {id}를 경로 변수라고 부르면, 가변 매개 변수
     public ResponseEntity<String> delete(@PathVariable Long id) {
@@ -212,7 +216,6 @@ public class ProductController {
         Optional<Product> findProduct = productService.findById(id);
 
 
-
         if (findProduct.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -246,8 +249,26 @@ public class ProductController {
         }
     }
 
-    @GetMapping()
-    public List<Product> getBigsizeProducts(@RequestParam(required = false) String filter){
+    @GetMapping("")
+    public List<Product> getBigsizeProducts(@RequestParam(required = false) String filter) {
         return productService.getProductsByFilter(filter);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Page<Product>> listProducts(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "6") int pageSize
+    ) {
+        System.out.println("pageNumber : " + pageNumber + ", pageSize : " + pageSize);
+
+        Sort mysort = Sort.by(Sort.Direction.DESC, "id");
+
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, mysort);
+
+        Page<Product> productPage = productService.listProducts(pageable);
+
+        System.out.println(productPage.getContent());
+
+        return ResponseEntity.ok(productPage);
     }
 }
